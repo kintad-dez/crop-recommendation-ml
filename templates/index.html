@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Crop Recommendation System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eef7ee, #f8fbf8);
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Header */
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 36px;
+            color: #166534;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        /* Information box */
+
+        .info-box {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 15px 18px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            color: #365314;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Form */
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #374151;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+        }
+
+        /* Button */
+
+        button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 15px;
+            background: #15803d;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #166534;
+            transform: translateY(-1px);
+        }
+
+        /* Result */
+
+        .result {
+            margin-top: 35px;
+            padding: 30px;
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+            border: 1px solid #bbf7d0;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4b5563;
+            margin-bottom: 10px;
+        }
+
+        .crop {
+            font-size: 36px;
+            font-weight: bold;
+            color: #15803d;
+            text-transform: capitalize;
+        }
+
+.confidence {
+    margin-top: 25px;
+}
+
+.confidence-label {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 5px;
+}
+
+.confidence-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #166534;
+    margin-bottom: 10px;
+}
+
+.confidence-bar {
+    width: 100%;
+    height: 10px;
+    background: #d1fae5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: #16a34a;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+        /* Error */
+
+        .error {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        /* Model information */
+
+        .model-info {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+            color: #166534;
+        }
+
+        .stat span {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* Footer */
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        /* Mobile */
+
+        @media (max-width: 650px) {
+
+            .container {
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .model-info {
+                gap: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- Header -->
+
+        <div class="header">
+
+            <div class="icon">🌱</div>
+
+            <h1>Crop Recommendation System</h1>
+
+            <p class="description">
+                Use soil and weather conditions to find a suitable crop recommendation.
+            </p>
+
+        </div>
+
+
+        <!-- Information -->
+
+        <div class="info-box">
+            Enter the measured soil nutrients and environmental conditions below.
+            The machine learning model will analyze the values and recommend a crop.
+        </div>
+
+
+        <!-- Form -->
+
+        <h2 class="section-title">
+            Soil & Environmental Conditions
+        </h2>
+
+        <form method="POST">
+
+            <div class="form-grid">
+
+                <!-- Nitrogen -->
+
+                <div class="form-group">
+
+                    <label for="N">
+                        Nitrogen (N)
+                    </label>
+
+                    <div class="hint">
+                        Soil nitrogen level
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="N"
+                        id="N"
+                        placeholder="e.g. 90"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Phosphorus -->
+
+                <div class="form-group">
+
+                    <label for="P">
+                        Phosphorus (P)
+                    </label>
+
+                    <div class="hint">
+                        Soil phosphorus level
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="P"
+                        id="P"
+                        placeholder="e.g. 42"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Potassium -->
+
+                <div class="form-group">
+
+                    <label for="K">
+                        Potassium (K)
+                    </label>
+
+                    <div class="hint">
+                        Soil potassium level
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="K"
+                        id="K"
+                        placeholder="e.g. 43"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Temperature -->
+
+                <div class="form-group">
+
+                    <label for="temperature">
+                        Temperature (°C)
+                    </label>
+
+                    <div class="hint">
+                        Average temperature
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="temperature"
+                        id="temperature"
+                        placeholder="e.g. 20.8"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Humidity -->
+
+                <div class="form-group">
+
+                    <label for="humidity">
+                        Humidity (%)
+                    </label>
+
+                    <div class="hint">
+                        Relative humidity
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="humidity"
+                        id="humidity"
+                        placeholder="e.g. 82"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- pH -->
+
+                <div class="form-group">
+
+                    <label for="ph">
+                        Soil pH
+                    </label>
+
+                    <div class="hint">
+                        Acidity or alkalinity
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="ph"
+                        id="ph"
+                        placeholder="e.g. 6.5"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Rainfall -->
+
+                <div class="form-group">
+
+                    <label for="rainfall">
+                        Rainfall (mm)
+                    </label>
+
+                    <div class="hint">
+                        Expected rainfall
+                    </div>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="rainfall"
+                        id="rainfall"
+                        placeholder="e.g. 202.9"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Submit -->
+
+            <button type="submit">
+                🌾 Recommend Crop
+            </button>
+
+        </form>
+
+
+        <!-- Error message -->
+
+        {% if error %}
+
+<div class="error">
+    ⚠️ {{ error }}
+</div>
+
+{% endif %}
+
+       {% if crop %}
+
+<div class="result">
+
+    <div class="result-label">
+        Recommended Crop
+    </div>
+
+    <div class="crop">
+        🌾 {{ crop }}
+    </div>
+
+    {% if confidence is not none %}
+
+    <div class="confidence">
+
+        <div class="confidence-label">
+            Model Confidence
+        </div>
+
+        <div class="confidence-value">
+            {{ "%.2f"|format(confidence) }}%
+        </div>
+
+        <div class="confidence-bar">
+            <div
+                class="confidence-fill"
+                style="width: {{ confidence }}%;">
+            </div>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endif %}
+
+
+        <!-- Model information -->
+
+        <div class="model-info">
+
+            <div class="stat">
+                <strong>99.55%</strong>
+                <span>Model Accuracy</span>
+            </div>
+
+            <div class="stat">
+                <strong>22</strong>
+                <span>Crop Classes</span>
+            </div>
+
+            <div class="stat">
+                <strong>7</strong>
+                <span>Input Features</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Machine Learning Crop Recommendation System
+    </div>
+
+</div>
+
+</body>
+
+</html>
