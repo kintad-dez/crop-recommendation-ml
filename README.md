@@ -72,3 +72,13 @@ crop-recommendation-ml/
 ├── requirements.txt
 ├── LICENSE
 └── README.md
+
+## 👨‍💻 Author
+
+**Abdullahi Akintade**
+
+Computer Science / Software Engineering & AI/ML Enthusiast
+
+## 📄 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
